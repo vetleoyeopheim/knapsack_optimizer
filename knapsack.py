@@ -1,6 +1,3 @@
-"""
-Author: Vetle Øye Opheim
-"""
 
 import numpy as np
 from numba import njit
@@ -26,9 +23,10 @@ class Knapsack:
         Return an array of all possible sets of quantities
         Used for brute force solutions for 
         """
-        quantities = list(itertools.product([0,1], repeat = self.item_num))
+        quantities = list(itertools.product([0,1], repeat = len(self.values)))
         quantities = np.array(quantities)
-
+        quantities = quantities[np.sum(quantities, axis = 1) == self.item_num]
+        print(quantities)
         return quantities
 
     def calc_scores(self, quantities):
@@ -43,17 +41,17 @@ class Knapsack:
 
         quantities = self.all_quantities()
         scores = self.calc_scores(quantities)
-
+        costs = self.calc_costs(quantities)
         #Get the set of admissible quantities, those combinations where budget is smaller than or equal to cost. When cost > budget scores are set to 0
-        admissible = np.where(cost <= self.budget, scores, 0)
+        admissible = np.where(costs <= self.budget, scores, 0)
 
-        return (np.max(admissible), np.argmax(admissible), admissible)
-
+        return (np.max(admissible, axis = 0), np.argmax(admissible, axis = 0), quantities)
 
 
 
     
         
+
 
 
 
